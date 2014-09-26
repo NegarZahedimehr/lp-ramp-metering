@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class Linear {
 
-    private HashMap<String,Double> coefficients = new HashMap<String,Double>();
+    private HashMap<String,Double> coefficients = new HashMap<String,Double>();   // variable name to coefficient
     private Relation relation = null;
     private double rhs = Double.NaN;
 
@@ -55,6 +55,34 @@ public class Linear {
 
     public Set<String> get_unknowns(){
         return coefficients.keySet();
+    }
+
+    public Problem.ConstraintState evaluate(PointValue P,double epsilon){
+
+        Problem.ConstraintState result = null;
+        double lhs = 0d;
+        Iterator it = coefficients.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            String var_name = (String) pairs.getKey();
+            Double alpha = (Double) pairs.getValue();
+            lhs += alpha*P.get(var_name);
+        }
+
+        double diff = lhs-rhs;
+        if(Math.abs(diff)<epsilon)
+            return Problem.ConstraintState.active;
+
+        switch(relation){
+            case EQ:
+                return Problem.ConstraintState.violated;
+            case GEQ:
+                return diff>epsilon ? Problem.ConstraintState.inactive : Problem.ConstraintState.violated;
+            case LEQ:
+                return diff<-epsilon ? Problem.ConstraintState.inactive : Problem.ConstraintState.violated;
+            default:
+                return null;
+        }
     }
 
     @Override

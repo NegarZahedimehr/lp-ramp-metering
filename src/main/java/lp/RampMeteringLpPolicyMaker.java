@@ -4,7 +4,6 @@ import beats_link.RampMeteringLimitSet;
 import beats_link.RampMeteringPolicyMaker;
 import beats_link.RampMeteringPolicySet;
 import jaxb.*;
-import jaxb.Network;
 import lp.solver.SolverType;
 import network.fwy.FwyNetwork;
 
@@ -29,6 +28,20 @@ public class RampMeteringLpPolicyMaker implements RampMeteringPolicyMaker {
         LP.set_rhs_from_fwy(fwy);
     }
 
+    public void set_density_link_network(Long link_id,double density_value){
+        fwy.set_density_without_jaxb(link_id, density_value);
+//        LP.set_rhs_for_link(fwy, link_id);
+    }
+
+    public void set_demand_link_network(Long link_id,Double demand,double demand_dt){
+        fwy.set_demand_without_jaxb(link_id, demand,LP.sim_dt_in_seconds);
+//        LP.set_rhs_for_link(fwy, link_id);
+    }
+
+    public void set_rhs_link(Long link_id,Double demand){
+        LP.set_rhs_for_link(fwy,link_id ,demand);
+    }
+
     public RampMeteringSolution solve(SolverType solver_type) throws Exception {
         return new RampMeteringSolution(LP,fwy,solver_type);
     }
@@ -37,8 +50,15 @@ public class RampMeteringLpPolicyMaker implements RampMeteringPolicyMaker {
         System.out.println(LP);
     }
 
+
+
+
+
+
+
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringLimitSet control, Double dt) {
+
 
         return null;
     }
@@ -46,5 +66,6 @@ public class RampMeteringLpPolicyMaker implements RampMeteringPolicyMaker {
     public FwyNetwork getFwy() {
         return fwy;
     }
+
 
 }

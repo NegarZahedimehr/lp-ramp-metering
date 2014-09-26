@@ -1,13 +1,11 @@
 package network.fwy;
 
-import network.beats.Parameters;
 import jaxb.Actuator;
 import jaxb.FundamentalDiagram;
 import jaxb.Link;
-import lp.problem.Linear;
+import network.beats.Parameters;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public final class FwySegment {
 
@@ -15,7 +13,10 @@ public final class FwySegment {
     private Long ml_link_id;
     private Long or_link_id;
     private Long fr_link_id;
+    private Long actuated_onRamp_id;
     private Long fr_node_id;
+
+
 
     // fundamental diagram
     private Double vf;        // [link/sec] free flow speed
@@ -32,6 +33,8 @@ public final class FwySegment {
 
     // metering
     public boolean is_metered;
+    public boolean has_off_ramp;
+    public boolean has_on_ramp;
     public Double l_max;     // [veh] maximum or queue length
     private Double r_max;     // [veh/sec] maximum or metering rate
 
@@ -67,6 +70,12 @@ public final class FwySegment {
 
         // metering
         is_metered = actuator!=null;
+        has_on_ramp = or_link!=null;
+        has_off_ramp = fr_link != null;
+
+        if (is_metered)
+                actuated_onRamp_id = or_link.getId();
+
         if(is_metered){
             Parameters P = (Parameters) actuator.getParameters();
             r_max = get_parameter(P,"max_rate_in_vphpl",Double.POSITIVE_INFINITY)*or_lanes;
@@ -98,6 +107,11 @@ public final class FwySegment {
     public double get_vf_link_per_sec(){
         return this.vf;
     }
+    public double get_main_line_link_id(){return this.ml_link_id;}
+    public double get_on_ramp_link_id(){return this.or_link_id;}
+    public double get_actuated_on_ramp_id(){return this.actuated_onRamp_id;}
+    public double get_off_ramp_id(){return this.fr_link_id;}
+
 
     ///////////////////////////////////////////////////////////////////
     // set
@@ -116,6 +130,15 @@ public final class FwySegment {
     public void set_demands(ArrayList<Double> demand,double dt){
         demand_profile_dt = dt;
         demand_profile = demand;
+    }
+
+    public void set_constant_demand_segment(Double segment_demand_input, double dt){
+        demand_profile_dt = dt;
+//        for (int i=0;i<demand_profile.size();i++)
+        demand_profile = new ArrayList<Double>();
+        demand_profile.add(segment_demand_input);
+
+
     }
 
     // t in seconds
