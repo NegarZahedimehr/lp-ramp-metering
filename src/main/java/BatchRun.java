@@ -32,9 +32,11 @@ public class BatchRun {
         double K_dem_seconds = 9d;
         double K_cool_seconds = 15d;
         double eta = .1d;
+        ArrayList<Double> permutations;
         int num_links;
         int num_segments;
         ArrayList<Long> link_ids;
+        Double[] permute;
         SolverType solver_type = SolverType.LPSOLVE;
 
         String config = "data/config/smallNetwork.xml";
@@ -60,7 +62,7 @@ public class BatchRun {
 
         int num_states = policy_maker.getFwy().get_num_states();
 
-        int nDivisions = 1;
+        int nDivisions = 2;
         double max_demand = 20;
 
         double init_dens_row[] = new double[num_states];
@@ -101,8 +103,41 @@ public class BatchRun {
                 lp_results_printer.print_lp_results(sol,sol.K,index);
             }
             }
+        num_states = 2;
+        for (int iState =0;iState<num_states;iState++){
+        for (int i=0;i<nDivisions;i++){
+            permute[iState]
+        }
+
 
         }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
